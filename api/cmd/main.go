@@ -6,6 +6,8 @@ import (
 	"net/http"
 
 	"pokeapi/api/internal/domain"
+	"pokeapi/api/internal/repository/client"
+	"pokeapi/api/internal/repository/storage"
 	"pokeapi/api/internal/rest"
 )
 
@@ -13,7 +15,9 @@ const defaultPort = "8080" // TODO move to config
 
 func main() {
 	// init dependencies
-	service := domain.NewService(nil, nil)
+	st := storage.NewRepository()
+	cl := client.NewRepository()
+	service := domain.NewService(st, cl)
 
 	// start server
 	log.Printf("starting server on :%s", defaultPort)
@@ -25,5 +29,3 @@ func main() {
 		log.Println("server stopped")
 	}
 }
-
-

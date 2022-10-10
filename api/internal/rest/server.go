@@ -1,11 +1,9 @@
 package rest
 
 import (
-	"errors"
 	"net/http"
 
 	"pokeapi/api/internal/domain/entities"
-	apiErr "pokeapi/api/internal/errors"
 )
 
 type (
@@ -33,12 +31,4 @@ func NewServer(srv Service) *Server {
 	server.router.HandleFunc("/pokeapi/fetch", server.fetch)
 
 	return server
-}
-
-func Error(w http.ResponseWriter, err error) {
-	var e apiErr.ApiError
-	if ok := errors.As(err, &e); !ok {
-		e = apiErr.ErrUnhandled
-	}
-	http.Error(w, e.Error(), e.Status())
 }

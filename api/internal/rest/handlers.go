@@ -3,7 +3,6 @@ package rest
 import (
 	"encoding/json"
 	"net/http"
-	"strconv"
 
 	"pokeapi/api/internal/errors"
 )
@@ -11,22 +10,22 @@ import (
 func (s *Server) get(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "GET" {
 		Error(w, errors.ErrBadRequest)
+		return
 	}
-	idStr := r.URL.Query()["id"][0]
-	if idStr == "" {
-		Error(w, errors.ErrBadRequest)
-	}
-	id, err := strconv.ParseInt(idStr, 10, 64)
-	if err != nil {
-		Error(w, errors.ErrBadRequest)
-	}
-	pokemon, err := s.service.GetSummary(int(id))
+	id, err := IDFromParams(r)
 	if err != nil {
 		Error(w, err)
+		return
+	}
+	pokemon, err := s.service.GetSummary(id)
+	if err != nil {
+		Error(w, err)
+		return
 	}
 	pokeBytes, err := json.Marshal(&pokemon)
 	if err != nil {
 		Error(w, errors.ErrMarshal)
+		return
 	}
 
 	w.Header().Set("Content-type", "application/json")
@@ -37,17 +36,16 @@ func (s *Server) get(w http.ResponseWriter, r *http.Request) {
 func (s *Server) fetch(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "GET" {
 		Error(w, errors.ErrBadRequest)
+		return
 	}
-	idStr := r.URL.Query()["id"][0]
-	if idStr == "" {
-		Error(w, errors.ErrBadRequest)
-	}
-	id, err := strconv.ParseInt(idStr, 10, 64)
+	id, err := IDFromParams(r)
 	if err != nil {
-		Error(w, errors.ErrBadRequest)
-	}
-	if err := s.service.FetchData(int(id)); err != nil {
 		Error(w, err)
+		return
+	}
+	if err := s.service.FetchData(id); err != nil {
+		Error(w, err)
+		return
 	}
 
 	w.Header().Set("Content-type", "application/json")
