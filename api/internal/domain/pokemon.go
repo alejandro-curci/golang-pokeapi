@@ -12,10 +12,10 @@ type (
 	}
 	Storage interface {
 		Get(id int) (entities.Pokemon, error)
-		Save(id int, pokemon entities.Pokemon) error
+		Save(pokemon entities.Pokemon) error
 	}
 	Client interface {
-		Find(id int) (entities.Pokemon, error)
+		Find(id int) (entities.PokeData, error)
 	}
 )
 
@@ -32,20 +32,20 @@ func (s *Service) FetchData(id int) error {
 	if p.IsEmpty() {
 		return errors.ErrNotFound
 	}
-	if err := s.storage.Save(id, p); err != nil {
+	if err := s.storage.Save(p.ToPokemon()); err != nil {
 		return errors.ErrStorage
 	}
 	return nil
 }
 
-// GetSummary returns a summary from the stored data
-func (s *Service) GetSummary(id int) (entities.Summary, error) {
+// GetPokemon returns a summary from the stored data
+func (s *Service) GetPokemon(id int) (entities.Pokemon, error) {
 	p, err := s.storage.Get(id)
 	if err != nil {
-		return entities.Summary{}, errors.ErrStorage
+		return entities.Pokemon{}, errors.ErrStorage
 	}
-	if p.IsEmpty() {
-		return entities.Summary{}, errors.ErrNotFound
+	if (p == entities.Pokemon{}) {
+		return entities.Pokemon{}, errors.ErrNotFound
 	}
-	return p.ToSummary(), nil
+	return p, nil
 }

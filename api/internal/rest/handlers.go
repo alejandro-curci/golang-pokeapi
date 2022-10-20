@@ -17,7 +17,7 @@ func (s *Server) get(w http.ResponseWriter, r *http.Request) {
 		Error(w, err)
 		return
 	}
-	pokemon, err := s.service.GetSummary(id)
+	pokemon, err := s.service.GetPokemon(id)
 	if err != nil {
 		Error(w, err)
 		return

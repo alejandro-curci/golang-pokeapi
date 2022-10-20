@@ -1,18 +1,56 @@
 package storage
 
-import "pokeapi/api/internal/domain/entities"
+import (
+	"context"
+	"fmt"
+	"log"
+	"pokeapi/api/internal/config"
+	"pokeapi/api/internal/domain/entities"
+
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+)
 
 type Repository struct {
+	client     *mongo.Client
+	collection *mongo.Collection
 }
 
-func NewRepository() *Repository {
-	return &Repository{}
+func NewRepository(conf config.Storage) *Repository {
+	uri := fmt.Sprintf("%s://%s:%s", conf.Connection, conf.Host, conf.Port)
+	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(uri))
+	if err != nil {
+		log.Fatal(err)
+	}
+	return &Repository{
+		client:     client,
+		collection: client.Database(conf.Database).Collection(conf.Collection),
+	}
 }
 
 func (r Repository) Get(id int) (entities.Pokemon, error) {
-	return entities.Pokemon{}, nil
+	ctx := context.Background()
+	query := bson.D{
+		{"_id", id},
+	}
+
+	cursor, err := r.collection.Find(ctx, query)
+	if err != nil {
+		return entities.Pokemon{}, err
+	}
+
+	var p entities.Pokemon
+	return p, cursor.Decode(&p)
 }
 
-func (r Repository) Save(id int, pokemon entities.Pokemon) error {
-	return nil
+func (r Repository) Save(pokemon entities.Pokemon) error {
+	ctx := context.Background()
+	doc := bson.D{
+		{"_id", pokemon.ID},
+		{"name", pokemon.Name},
+	}
+
+	_, err := r.collection.InsertOne(ctx, doc)
+	return err
 }

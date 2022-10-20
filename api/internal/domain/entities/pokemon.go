@@ -1,11 +1,11 @@
 package entities
 
-type Summary struct {
+type Pokemon struct {
 	ID   int    `json:"id"`
 	Name string `json:"name"`
 }
 
-type Pokemon struct {
+type PokeData struct {
 	Abilities []struct {
 		Ability struct {
 			Name string `json:"name"`
@@ -260,12 +260,12 @@ type Pokemon struct {
 	Weight int `json:"weight"`
 }
 
-func (p Pokemon) IsEmpty() bool {
+func (p PokeData) IsEmpty() bool {
 	return p.Name == ""
 }
 
-func (p Pokemon) ToSummary() Summary {
-	return Summary{
+func (p PokeData) ToPokemon() Pokemon {
+	return Pokemon{
 		ID:   p.Id,
 		Name: p.Name,
 	}

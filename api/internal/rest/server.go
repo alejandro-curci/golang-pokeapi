@@ -13,7 +13,7 @@ type (
 	}
 	Service interface {
 		FetchData(id int) error
-		GetSummary(id int) (entities.Summary, error)
+		GetPokemon(id int) (entities.Pokemon, error)
 	}
 )
 

@@ -22,20 +22,20 @@ func NewRepository(conf config.RestClient) *Repository {
 	}
 }
 
-func (r Repository) Find(id int) (entities.Pokemon, error) {
+func (r Repository) Find(id int) (entities.PokeData, error) {
 	url := fmt.Sprintf(requestURL, id)
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
-		return entities.Pokemon{}, err
+		return entities.PokeData{}, err
 	}
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return entities.Pokemon{}, err
+		return entities.PokeData{}, err
 	}
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return entities.Pokemon{}, err
+		return entities.PokeData{}, err
 	}
-	var pokemon entities.Pokemon
+	var pokemon entities.PokeData
 	return pokemon, json.Unmarshal(body, &pokemon)
 }
