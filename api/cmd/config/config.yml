@@ -1,0 +1,9 @@
+rest_client:
+  url: https://pokeapi.co/api/v2
+
+storage:
+  connection: mongodb
+  host: localhost
+  port: 27017
+  database: db
+  collection: pokemon

@@ -5,16 +5,21 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"pokeapi/api/internal/config"
 
 	"pokeapi/api/internal/domain/entities"
 )
 
-const requestURL = "https://pokeapi.co/api/v2/pokemon/%d"
+const requestURL = "/pokemon/%d"
 
-type Repository struct{}
+type Repository struct {
+	endpoint string
+}
 
-func NewRepository() *Repository {
-	return &Repository{}
+func NewRepository(conf config.RestClient) *Repository {
+	return &Repository{
+		endpoint: conf.URL + requestURL,
+	}
 }
 
 func (r Repository) Find(id int) (entities.Pokemon, error) {
