@@ -1,7 +1,7 @@
 package entities
 
 type Pokemon struct {
-	ID   int    `json:"id"`
+	ID   int    `bson:"_id" json:"id"`
 	Name string `json:"name"`
 }
 

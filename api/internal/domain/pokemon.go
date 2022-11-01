@@ -25,6 +25,15 @@ func NewService(storage Storage, client Client) *Service {
 
 // FetchData makes a request to the data source and saves the response into the storage
 func (s *Service) FetchData(id int) error {
+	// validate whether the resource already exists
+	pokeSt, err := s.storage.Get(id)
+	if err != nil {
+		return errors.ErrStorage
+	}
+	if (pokeSt != entities.Pokemon{}) {
+		return errors.ErrAlreadySaved
+	}
+	// go get the resource to an external api
 	p, err := s.client.Find(id)
 	if err != nil {
 		return errors.ErrRestClient
@@ -32,6 +41,7 @@ func (s *Service) FetchData(id int) error {
 	if p.IsEmpty() {
 		return errors.ErrNotFound
 	}
+	// save the resource in storage
 	if err := s.storage.Save(p.ToPokemon()); err != nil {
 		return errors.ErrStorage
 	}

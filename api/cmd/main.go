@@ -19,7 +19,7 @@ func main() {
 	conf := config.Get()
 
 	// init dependencies
-	st := storage.NewRepository()
+	st := storage.NewRepository(conf.Storage)
 	cl := client.NewRepository(conf.RestClient)
 	service := domain.NewService(st, cl)
 

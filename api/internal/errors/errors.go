@@ -6,12 +6,13 @@ import (
 )
 
 var (
-	ErrNotFound   = New("not_found", "resource not found", http.StatusNotFound)
-	ErrRestClient = New("rest_client_error", "rest client error", http.StatusInternalServerError)
-	ErrStorage    = New("storage_error", "storage  error", http.StatusInternalServerError)
-	ErrUnhandled  = New("unhandled_error", "unhandled error", http.StatusInternalServerError)
-	ErrBadRequest = New("bad_request", "bad request", http.StatusBadRequest)
-	ErrMarshal    = New("marshal_error", "marshal error", http.StatusInternalServerError)
+	ErrNotFound     = New("not_found", "resource not found", http.StatusNotFound)
+	ErrRestClient   = New("rest_client_error", "rest client error", http.StatusInternalServerError)
+	ErrStorage      = New("storage_error", "storage  error", http.StatusInternalServerError)
+	ErrAlreadySaved = New("already_saved_error", "resource already saved", http.StatusConflict)
+	ErrUnhandled    = New("unhandled_error", "unhandled error", http.StatusInternalServerError)
+	ErrBadRequest   = New("bad_request", "bad request", http.StatusBadRequest)
+	ErrMarshal      = New("marshal_error", "marshal error", http.StatusInternalServerError)
 )
 
 type ApiError struct {

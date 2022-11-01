@@ -23,7 +23,7 @@ func NewRepository(conf config.RestClient) *Repository {
 }
 
 func (r Repository) Find(id int) (entities.PokeData, error) {
-	url := fmt.Sprintf(requestURL, id)
+	url := fmt.Sprintf(r.endpoint, id)
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		return entities.PokeData{}, err

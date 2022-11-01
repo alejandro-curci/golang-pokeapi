@@ -8,6 +8,7 @@ import (
 	"pokeapi/api/internal/domain/entities"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -32,7 +33,7 @@ func NewRepository(conf config.Storage) *Repository {
 func (r Repository) Get(id int) (entities.Pokemon, error) {
 	ctx := context.Background()
 	query := bson.D{
-		{"_id", id},
+		primitive.E{Key: "_id", Value: id},
 	}
 
 	cursor, err := r.collection.Find(ctx, query)
@@ -41,14 +42,17 @@ func (r Repository) Get(id int) (entities.Pokemon, error) {
 	}
 
 	var p entities.Pokemon
-	return p, cursor.Decode(&p)
+	if cursor.Next(ctx) {
+		err = cursor.Decode(&p)
+	}
+	return p, err
 }
 
 func (r Repository) Save(pokemon entities.Pokemon) error {
 	ctx := context.Background()
 	doc := bson.D{
-		{"_id", pokemon.ID},
-		{"name", pokemon.Name},
+		primitive.E{Key: "_id", Value: pokemon.ID},
+		primitive.E{Key: "name", Value: pokemon.Name},
 	}
 
 	_, err := r.collection.InsertOne(ctx, doc)
