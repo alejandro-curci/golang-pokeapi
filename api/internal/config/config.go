@@ -26,7 +26,7 @@ type (
 	}
 )
 
-const filePathFormat = "%s/api/cmd/config/%s.yml"
+const filePathFormat = "%s/cmd/config/%s.yml"
 
 var (
 	ymlConf Config

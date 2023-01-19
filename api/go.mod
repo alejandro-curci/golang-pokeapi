@@ -1,9 +1,9 @@
-module pokeapi
+module pokeapi/api
 
 go 1.19
 
 require (
-	go.mongodb.org/mongo-driver v1.10.3
+	go.mongodb.org/mongo-driver v1.11.1
 	gopkg.in/yaml.v2 v2.4.0
 )
 
