@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
 	"pokeapi/api/internal/config"
 	"pokeapi/api/internal/domain/entities"
 
@@ -19,7 +20,11 @@ type Repository struct {
 }
 
 func NewRepository(conf config.Storage) *Repository {
-	uri := fmt.Sprintf("%s://%s:%s", conf.Connection, conf.Host, conf.Port)
+	uri := os.Getenv("MONGO_URI")
+	if uri == "" { // use uri from local config
+		uri = fmt.Sprintf("%s://%s:%s", conf.Connection, conf.Host, conf.Port)
+	}
+
 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(uri))
 	if err != nil {
 		log.Fatal(err)
@@ -38,14 +43,16 @@ func (r Repository) Get(id int) (entities.Pokemon, error) {
 
 	cursor, err := r.collection.Find(ctx, query)
 	if err != nil {
-		return entities.Pokemon{}, err
+		return entities.Pokemon{}, fmt.Errorf("error finding pokemon: %w", err)
 	}
 
 	var p entities.Pokemon
 	if cursor.Next(ctx) {
-		err = cursor.Decode(&p)
+		if err := cursor.Decode(&p); err != nil {
+			return entities.Pokemon{}, fmt.Errorf("error decoding pokemon: %w", err)
+		}
 	}
-	return p, err
+	return p, nil
 }
 
 func (r Repository) Save(pokemon entities.Pokemon) error {
@@ -56,5 +63,8 @@ func (r Repository) Save(pokemon entities.Pokemon) error {
 	}
 
 	_, err := r.collection.InsertOne(ctx, doc)
-	return err
+	if err != nil {
+		return fmt.Errorf("error inserting pokemon: %w", err)
+	}
+	return nil
 }
